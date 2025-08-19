@@ -20,6 +20,8 @@
   const overlay = document.getElementById('overlay');
   /** @type {HTMLButtonElement} */
   const startBtn = document.getElementById('startBtn');
+  /** @type {HTMLElement} */
+  const bigCat = document.getElementById('bigCat');
 
   const RAT_EMOJI = '🐭';
 
@@ -30,6 +32,8 @@
   let animationFrameId = 0;
   let spawnIntervalId = 0;
   let countdownIntervalId = 0;
+  let bigRespawnTimeoutId = 0;
+  let catSizePx = 48;
 
   /** Cat motion state */
   const catMotion = {
@@ -49,7 +53,8 @@
   }
 
   function setCatPosition(x, y) {
-    catElement.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    catElement.style.left = `${Math.round(x)}px`;
+    catElement.style.top = `${Math.round(y)}px`;
   }
 
   function centerToTopLeft(x, y, width = 0, height = 0) {
@@ -190,6 +195,14 @@
     const catW = catRect.width;
     const catH = catRect.height;
 
+    // Big cat power-up collision
+    if (bigCat && !bigCat.hidden) {
+      const bigRect = bigCat.getBoundingClientRect();
+      if (rectsOverlap(catX, catY, catW, catH, bigRect.left, bigRect.top, bigRect.width, bigRect.height)) {
+        consumeBigCat();
+      }
+    }
+
     for (let i = rats.length - 1; i >= 0; i--) {
       const r = rats[i];
       if (!r.alive) {
@@ -257,6 +270,28 @@
     clearInterval(countdownIntervalId);
   }
 
+  function showBigCat() {
+    if (bigCat) bigCat.hidden = false;
+  }
+
+  function hideBigCat() {
+    if (bigCat) bigCat.hidden = true;
+  }
+
+  function scheduleBigCatRespawn(delayMs = 12000) {
+    clearTimeout(bigRespawnTimeoutId);
+    bigRespawnTimeoutId = setTimeout(() => {
+      if (isRunning) showBigCat();
+    }, delayMs);
+  }
+
+  function consumeBigCat() {
+    hideBigCat();
+    catSizePx = Math.min(catSizePx + 16, 160);
+    catElement.style.fontSize = `${catSizePx}px`;
+    scheduleBigCatRespawn(14000);
+  }
+
   function beginGame() {
     isRunning = true;
     score = 0;
@@ -267,6 +302,9 @@
     overlay.style.display = 'none';
     restartButton.hidden = true;
     lastFrameTs = 0;
+    catSizePx = 48;
+    catElement.style.fontSize = `${catSizePx}px`;
+    showBigCat();
     startSpawning();
     startCountdown();
     animationFrameId = requestAnimationFrame(frame);
@@ -283,6 +321,8 @@
     overlay.querySelector('h1').textContent = 'Time\'s up!';
     overlay.querySelector('p').textContent = `You caught ${score} rat${score === 1 ? '' : 's'}.`;
     startBtn.textContent = 'Play again';
+    hideBigCat();
+    clearTimeout(bigRespawnTimeoutId);
   }
 
   // Pointer handling (mouse + touch)
@@ -292,12 +332,10 @@
     const y = clamp(clientY, 0, window.innerHeight);
     catMotion.targetX = x;
     catMotion.targetY = y;
-    // If not running yet, also place the cat immediately
-    if (!isRunning) {
-      catMotion.currentX = x;
-      catMotion.currentY = y;
-      placeCatAt(x, y);
-    }
+    // Snap cat to pointer for exact alignment
+    catMotion.currentX = x;
+    catMotion.currentY = y;
+    placeCatAt(x, y);
   }
 
   window.addEventListener('mousemove', (e) => handlePointer(e.clientX, e.clientY));
@@ -316,6 +354,7 @@
 
   // Place cat initially at center
   window.addEventListener('load', () => {
+    catElement.style.fontSize = `${catSizePx}px`;
     placeCatAt(catMotion.currentX, catMotion.currentY);
     updateHud();
   });
