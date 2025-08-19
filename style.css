@@ -71,9 +71,9 @@ body {
 
 #cat {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  top: 0;
+  transform-origin: top left;
   font-size: 48px;
   line-height: 1;
   z-index: 20;
@@ -146,6 +146,21 @@ body {
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(102, 169, 255, 0.35);
+}
+
+/* Big cat power-up in the center */
+.big-cat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 110px;
+  line-height: 1;
+  opacity: 0.9;
+  z-index: 8;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,0.45));
 }
 
 @media (max-width: 600px) {
