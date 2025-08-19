@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cat & Rats - 60s Chase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main id="game" aria-label="Cat and Rats game area">
+      <div id="hud" aria-live="polite">
+        <div id="score">Score: 0</div>
+        <div id="timer">60</div>
+        <button id="restart" hidden>Play again</button>
+      </div>
+
+      <div id="cat" aria-label="Cat" role="img">🐱</div>
+
+      <section id="overlay" class="overlay">
+        <div class="overlay-card">
+          <h1>Cat & Rats</h1>
+          <p>Move your mouse (or finger) to chase the rats. Catch as many as you can in 60 seconds.</p>
+          <ul>
+            <li>Cat follows your cursor</li>
+            <li>Rats run in from all directions</li>
+            <li>Catch rats by touching them with the cat</li>
+          </ul>
+          <button id="startBtn" class="primary">Start</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="./game.js"></script>
+  </body>
+  </html>
+
